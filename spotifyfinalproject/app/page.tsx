@@ -32,7 +32,7 @@ export default function Home() {
                   Welcome to Soptify
                 </h1>
                 <p className="mx-auto max-w-[700px] text-white text-sm md:text-base lg:text-xl">
-                  The music streaming service where the songs are made up and the playlists don't matter!
+                  your fav song Soptify!
                 </p>
               </div>
               <div className="space-x-4">
