@@ -9,14 +9,14 @@ export const funnyPlaylists = [
   },
   {
     id: 2,
-    title: "Shower Hits (That Sound Terrible Outside the Shower)",
+    title: "WOMEN",
     description: "You're not as good as you think",
     imageUrl: "/placeholder.svg?height=150&width=150",
     songs: 8,
   },
   {
     id: 3,
-    title: "Songs to Cook Badly To",
+    title: "BTS",
     description: "Burning dinner never sounded so good",
     imageUrl: "/placeholder.svg?height=150&width=150",
     songs: 15,
