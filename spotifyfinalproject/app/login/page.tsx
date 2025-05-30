@@ -43,7 +43,7 @@ export default function LoginPage() {
           </div>
           <CardTitle className="text-xl md:text-2xl text-center">Welcome to Soptify</CardTitle>
           <CardDescription className="text-center text-sm md:text-base">
-            Enter your credentials to access your account. Or make some up, we're not picky.
+            enter your details .
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleLogin}>
