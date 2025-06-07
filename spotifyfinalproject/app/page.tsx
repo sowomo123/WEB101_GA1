@@ -49,7 +49,7 @@ export default function Home() {
       <footer className="w-full border-t py-6">
         <div className="container flex flex-col items-center justify-center gap-4 md:flex-row md:gap-8">
           <p className="text-center text-xs md:text-sm text-muted-foreground">
-            © 2025 Soptify. All rights reserved. Not affiliated with any actual music service.
+            © 2025 Soptify. All rights reserved. best music.
           </p>
         </div>
       </footer>
