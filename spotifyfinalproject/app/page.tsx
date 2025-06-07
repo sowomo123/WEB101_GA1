@@ -40,7 +40,7 @@ export default function Home() {
                   Welcome to Soptify
                 </h1>
                 <p className="mx-auto max-w-[700px] text-white text-sm md:text-base lg:text-xl">
-                  The music streaming service where the songs are made up and the playlists don't matter!
+                  your fav song Soptify!
                 </p>
               </div>
               <div className="space-x-4">
@@ -96,7 +96,7 @@ export default function Home() {
       <footer className="w-full border-t py-6">
         <div className="container flex flex-col items-center justify-center gap-4 md:flex-row md:gap-8">
           <p className="text-center text-xs md:text-sm text-muted-foreground">
-            © 2025 Soptify. All rights reserved. Not affiliated with any actual music service.
+            © 2025 Soptify. All rights reserved. best music.
           </p>
         </div>
       </footer>
