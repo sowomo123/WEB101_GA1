@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { Play } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -18,16 +19,42 @@ interface PlaylistCardProps {
   onPlay?: () => void
 }
 
+// Helper function to handle image loading with fallback
+const ImageWithFallback = ({
+  src,
+  alt,
+  className,
+  fallbackSrc = "/placeholder.svg?height=64&width=64",
+}: {
+  src: string
+  alt: string
+  className?: string
+  fallbackSrc?: string
+}) => {
+  const [imgSrc, setImgSrc] = useState(src)
+  const [hasError, setHasError] = useState(false)
+
+  const handleError = () => {
+    if (!hasError) {
+      setHasError(true)
+      setImgSrc(fallbackSrc)
+    }
+  }
+
+  return <img src={imgSrc || "/placeholder.svg"} alt={alt} className={className} onError={handleError} loading="lazy" />
+}
+
 export function PlaylistCard({ playlist, onClick, onPlay }: PlaylistCardProps) {
   return (
     <div
       className="group relative flex items-center gap-2 md:gap-4 bg-accent/50 rounded-md overflow-hidden hover:bg-accent transition-colors cursor-pointer"
       onClick={onClick}
     >
-      <img
+      <ImageWithFallback
         src={playlist.imageUrl || "/placeholder.svg"}
         alt={playlist.title}
-        className="h-12 w-12 md:h-16 md:w-16 object-cover"
+        className="h-12 w-12 md:h-16 md:w-16 object-cover flex-shrink-0"
+        fallbackSrc="/placeholder.svg?height=64&width=64"
       />
       <div className="flex-1 min-w-0 pr-10">
         <h3 className="font-medium truncate text-sm md:text-base">{playlist.title}</h3>

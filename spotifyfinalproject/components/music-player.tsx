@@ -22,6 +22,31 @@ interface MusicPlayerProps {
   isPlaying?: boolean
 }
 
+// Helper function to handle image loading with fallback
+const ImageWithFallback = ({
+  src,
+  alt,
+  className,
+  fallbackSrc = "/placeholder.svg?height=48&width=48",
+}: {
+  src: string
+  alt: string
+  className?: string
+  fallbackSrc?: string
+}) => {
+  const [imgSrc, setImgSrc] = useState(src)
+  const [hasError, setHasError] = useState(false)
+
+  const handleError = () => {
+    if (!hasError) {
+      setHasError(true)
+      setImgSrc(fallbackSrc)
+    }
+  }
+
+  return <img src={imgSrc || "/placeholder.svg"} alt={alt} className={className} onError={handleError} loading="lazy" />
+}
+
 export function MusicPlayer({ song, onPlayPause, isPlaying: externalIsPlaying }: MusicPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(externalIsPlaying || false)
   const [currentTime, setCurrentTime] = useState(0)
@@ -77,10 +102,11 @@ export function MusicPlayer({ song, onPlayPause, isPlaying: externalIsPlaying }:
       <div className="flex flex-col space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <img
+            <ImageWithFallback
               src={song.coverUrl || "/placeholder.svg"}
               alt={`${song.title} cover`}
-              className="h-10 w-10 rounded-md"
+              className="h-10 w-10 rounded-md object-cover"
+              fallbackSrc="/placeholder.svg?height=40&width=40"
             />
             <div>
               <div className="font-medium text-sm line-clamp-1">{song.title}</div>
@@ -113,7 +139,12 @@ export function MusicPlayer({ song, onPlayPause, isPlaying: externalIsPlaying }:
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-4 w-1/4">
-        <img src={song.coverUrl || "/placeholder.svg"} alt={`${song.title} cover`} className="h-12 w-12 rounded-md" />
+        <ImageWithFallback
+          src={song.coverUrl || "/placeholder.svg"}
+          alt={`${song.title} cover`}
+          className="h-12 w-12 rounded-md object-cover"
+          fallbackSrc="/placeholder.svg?height=48&width=48"
+        />
         <div>
           <div className="font-medium line-clamp-1">{song.title}</div>
           <div className="text-xs text-muted-foreground line-clamp-1">{song.artist}</div>
