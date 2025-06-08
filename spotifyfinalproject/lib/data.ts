@@ -9,6 +9,19 @@ export const funnyPlaylists = [
   },
   {
     id: 2,
+<<<<<<< HEAD
+    title: "WOMEN",
+    description: "You're not as good as you think",
+    imageUrl: "/placeholder.svg?height=150&width=150",
+    songs: 8,
+  },
+  {
+    id: 3,
+    title: "BTS",
+    description: "Burning dinner never sounded so good",
+    imageUrl: "/placeholder.svg?height=150&width=150",
+    songs: 15,
+=======
     title: "3AM Sad Boy Hours",
     description: "When you're feeling like The Weeknd but it's Tuesday",
     imageUrl: "/images/doja.webp",
@@ -20,6 +33,7 @@ export const funnyPlaylists = [
     description: "Main character energy playlist",
     imageUrl: "/images/ice.webp",
     songs: 5,
+>>>>>>> 07b05549275d6206032ab0561ed13a1435e7453a
   },
   {
     id: 4,
