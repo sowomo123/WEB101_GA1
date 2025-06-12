@@ -2,19 +2,41 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Home, Library, LogOut, Menu, Music, Search, Play } from "lucide-react"
+import { Home, Library, LogOut, Menu, Search, Play } from "lucide-react"
 
-import { CountdownTimer } from "@/components/countdown-timer"
-import { MusicPlayer } from "@/components/music-player"
+import { AudioPlayer } from "@/components/audio-player"
 import { PlaylistCard } from "@/components/playlist-card"
 import { SongDetailsDialog, type PlaylistDetails, type Song } from "@/components/song-details-dialog"
-import { UpcomingRelease } from "@/components/upcoming-release"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 // Import the mock data
 import { funnyPlaylists, detailedPlaylists } from "@/lib/data"
+
+// Helper function to handle image loading with fallback
+const ImageWithFallback = ({
+  src,
+  alt,
+  className,
+  fallbackSrc = "/placeholder.svg?height=150&width=150",
+}: {
+  src: string
+  alt: string
+  className?: string
+  fallbackSrc?: string
+}) => {
+  const [imgSrc, setImgSrc] = useState(src)
+  const [hasError, setHasError] = useState(false)
+
+  const handleError = () => {
+    if (!hasError) {
+      setHasError(true)
+      setImgSrc(fallbackSrc)
+    }
+  }
+
+  return <img src={imgSrc || "/placeholder.svg"} alt={alt} className={className} onError={handleError} loading="lazy" />
+}
 
 export default function DashboardPage() {
   const [currentSong, setCurrentSong] = useState({
@@ -22,7 +44,8 @@ export default function DashboardPage() {
     artist: "Rick Astley",
     album: "Whenever You Need Somebody",
     duration: 213, // in seconds
-    coverUrl: "/placeholder.svg?height=60&width=60",
+    coverUrl: "/images/billi.jpg",
+    audioUrl: "/audio/lovely.mp3", // Added default audio
   })
 
   const [selectedPlaylist, setSelectedPlaylist] = useState<PlaylistDetails | null>(null)
@@ -43,7 +66,8 @@ export default function DashboardPage() {
       ...currentSong,
       title: song.title,
       artist: song.artist,
-      coverUrl: selectedPlaylist?.imageUrl || "/placeholder.svg?height=60&width=60",
+      coverUrl: selectedPlaylist?.imageUrl || "/images/logo.jpg",
+      audioUrl: song.audioUrl || "/audio/lovely.mp3", // 
     })
     setIsPlaying(true)
     setIsDialogOpen(false)
@@ -53,12 +77,27 @@ export default function DashboardPage() {
     setIsPlaying(!isPlaying)
   }
 
+  const handleSongEnd = () => {
+    // Auto-play next song logic could be added here
+    setIsPlaying(false)
+  }
+
+  // Helper function to convert duration string (e.g., "3:45") to seconds
+  const convertDurationToSeconds = (duration: string): number => {
+    const [minutes, seconds] = duration.split(":").map(Number)
+    return minutes * 60 + seconds
+  }
+
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar - hidden on mobile */}
       <div className="hidden md:flex w-64 flex-col border-r bg-card p-4">
         <div className="flex items-center gap-2 mb-6">
-          <Music className="h-6 w-6 text-green-600" />
+          <ImageWithFallback
+            src="/images/logo.jpg"
+            alt="Soptify"
+            className="h-6 w-6 rounded-full object-cover"
+          />
           <span className="font-bold text-xl">Soptify</span>
         </div>
 
@@ -81,25 +120,6 @@ export default function DashboardPage() {
           </Button>
         </div>
 
-        <Separator className="my-4" />
-
-        <div className="mt-4 space-y-4">
-          {/* Upcoming Release */}
-          <div>
-            <h3 className="mb-2 text-sm font-medium">Upcoming Release</h3>
-            <UpcomingRelease />
-          </div>
-
-          {/* Premium Countdown */}
-          <div>
-            <h3 className="mb-2 text-sm font-medium">Your Premium Countdown</h3>
-            <div className="bg-green-100 p-3 rounded-md">
-              <p className="text-xs text-green-800 mb-1">Free trial ends in:</p>
-              <CountdownTimer />
-            </div>
-          </div>
-        </div>
-
         <div className="mt-auto">
           <Button variant="ghost" className="w-full justify-start" asChild>
             <Link href="/">
@@ -113,7 +133,11 @@ export default function DashboardPage() {
       {/* Mobile header */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-10 bg-background border-b p-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Music className="h-5 w-5 text-green-600" />
+          <ImageWithFallback
+            src="/images/spotify-logo.jpg"
+            alt="Soptify"
+            className="h-5 w-5 rounded-full object-cover"
+          />
           <span className="font-bold text-lg">Soptify</span>
         </div>
         <Sheet>
@@ -126,7 +150,11 @@ export default function DashboardPage() {
           <SheetContent side="left" className="w-64 p-0">
             <div className="flex flex-col h-full p-4">
               <div className="flex items-center gap-2 mb-6">
-                <Music className="h-6 w-6 text-green-600" />
+                <ImageWithFallback
+                  src="/images/spotify-logo.jpg"
+                  alt="Soptify"
+                  className="h-6 w-6 rounded-full object-cover"
+                />
                 <span className="font-bold text-xl">Soptify</span>
               </div>
 
@@ -149,25 +177,6 @@ export default function DashboardPage() {
                 </Button>
               </div>
 
-              <Separator className="my-4" />
-
-              <div className="mt-4 space-y-4">
-                {/* Upcoming Release */}
-                <div>
-                  <h3 className="mb-2 text-sm font-medium">Upcoming Release</h3>
-                  <UpcomingRelease />
-                </div>
-
-                {/* Premium Countdown */}
-                <div>
-                  <h3 className="mb-2 text-sm font-medium">Your Premium Countdown</h3>
-                  <div className="bg-green-100 p-3 rounded-md">
-                    <p className="text-xs text-green-800 mb-1">Free trial ends in:</p>
-                    <CountdownTimer />
-                  </div>
-                </div>
-              </div>
-
               <div className="mt-auto">
                 <Button variant="ghost" className="w-full justify-start" asChild>
                   <Link href="/">
@@ -185,7 +194,7 @@ export default function DashboardPage() {
       <div className="flex-1 overflow-auto pt-0 md:pt-0">
         {/* Add padding top on mobile for the fixed header */}
         <div className="p-6 pt-16 md:pt-6">
-          <h1 className="text-2xl md:text-3xl font-bold mb-6">Good Afternoon</h1>
+          
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             {funnyPlaylists.slice(0, 6).map((playlist) => (
@@ -197,14 +206,23 @@ export default function DashboardPage() {
                   // Play the first song in the playlist
                   const playlistDetails = detailedPlaylists[playlist.id]
                   if (playlistDetails && playlistDetails.songs.length > 0) {
-                    handlePlaySong(playlistDetails.songs[0])
+                    const song = playlistDetails.songs[0]
+                    setCurrentSong({
+                      title: song.title,
+                      artist: song.artist,
+                      album: song.album || "",
+                      duration: convertDurationToSeconds(song.duration),
+                      coverUrl: playlistDetails.imageUrl,
+                      audioUrl: song.audioUrl || "/audio/lovely.mp3",
+                    })
+                    setIsPlaying(true)
                   }
                 }}
               />
             ))}
           </div>
 
-          <h2 className="text-xl md:text-2xl font-bold mb-4">Made For You (Specifically to Annoy You)</h2>
+          <h2 className="text-xl md:text-2xl font-bold mb-4">Made For You (SWE)</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {funnyPlaylists.map((playlist) => (
               <div
@@ -214,10 +232,11 @@ export default function DashboardPage() {
               >
                 <div className="p-4">
                   <div className="aspect-square bg-muted rounded-md mb-4 overflow-hidden relative group">
-                    <img
+                    <ImageWithFallback
                       src={playlist.imageUrl || "/placeholder.svg"}
                       alt={playlist.title}
                       className="w-full h-full object-cover"
+                      fallbackSrc="/placeholder.svg?height=200&width=200"
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <Button
@@ -227,7 +246,16 @@ export default function DashboardPage() {
                           e.stopPropagation()
                           const playlistDetails = detailedPlaylists[playlist.id]
                           if (playlistDetails && playlistDetails.songs.length > 0) {
-                            handlePlaySong(playlistDetails.songs[0])
+                            const song = playlistDetails.songs[0]
+                            setCurrentSong({
+                              title: song.title,
+                              artist: song.artist,
+                              album: song.album || "",
+                              duration: convertDurationToSeconds(song.duration),
+                              coverUrl: playlistDetails.imageUrl,
+                              audioUrl: song.audioUrl || "/audio/lovely.mp3",
+                            })
+                            setIsPlaying(true)
                           }
                         }}
                       >
@@ -247,7 +275,7 @@ export default function DashboardPage() {
 
       {/* Music player - add padding bottom for mobile navigation */}
       <div className="fixed bottom-0 left-0 right-0 border-t bg-card p-2 pb-16 md:pb-2">
-        <MusicPlayer song={currentSong} isPlaying={isPlaying} onPlayPause={handlePlayPause} />
+        <AudioPlayer song={currentSong} isPlaying={isPlaying} onPlayPause={handlePlayPause} onSongEnd={handleSongEnd} />
       </div>
 
       {/* Mobile navigation bar */}

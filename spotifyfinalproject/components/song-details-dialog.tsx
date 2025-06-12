@@ -60,7 +60,7 @@ export function SongDetailsDialog({ playlist, isOpen, onClose, onPlaySong }: Son
             <p className="text-sm md:text-base opacity-90 mb-2">{playlist.description}</p>
             <div className="text-sm">
               <span className="font-semibold">Soptify</span> • {playlist.totalSongs} songs •
-              <span className="opacity-75"> Mostly ridiculous</span>
+              <span className="opacity-75"> Mostly ridiculous songs</span>
             </div>
           </div>
         </div>

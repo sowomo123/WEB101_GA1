@@ -2,19 +2,41 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Home, Library, LogOut, Menu, Music, Play, Search, X } from "lucide-react"
+import { Home, Library, LogOut, Menu, Play, Search, X } from "lucide-react"
 
-import { CountdownTimer } from "@/components/countdown-timer"
-import { MusicPlayer } from "@/components/music-player"
-import { UpcomingRelease } from "@/components/upcoming-release"
+import { AudioPlayer } from "@/components/audio-player"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 // Import the mock data from dashboard
 import { allSongs, type Song } from "@/lib/data"
+
+// Helper function to handle image loading with fallback
+const ImageWithFallback = ({
+  src,
+  alt,
+  className,
+  fallbackSrc = "/placeholder.svg?height=40&width=40",
+}: {
+  src: string
+  alt: string
+  className?: string
+  fallbackSrc?: string
+}) => {
+  const [imgSrc, setImgSrc] = useState(src)
+  const [hasError, setHasError] = useState(false)
+
+  const handleError = () => {
+    if (!hasError) {
+      setHasError(true)
+      setImgSrc(fallbackSrc)
+    }
+  }
+
+  return <img src={imgSrc || "/placeholder.svg"} alt={alt} className={className} onError={handleError} loading="lazy" />
+}
 
 export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -24,7 +46,8 @@ export default function SearchPage() {
     artist: "Rick Astley",
     album: "Whenever You Need Somebody",
     duration: 213, // in seconds
-    coverUrl: "/placeholder.svg?height=60&width=60",
+    coverUrl: "/images/spotify-logo.jpg",
+    audioUrl: "/audio/lovely.mp3",
   })
   const [isPlaying, setIsPlaying] = useState(false)
   const [playingSongId, setPlayingSongId] = useState<number | null>(null)
@@ -53,7 +76,8 @@ export default function SearchPage() {
       artist: song.artist,
       album: song.album || "",
       duration: convertDurationToSeconds(song.duration),
-      coverUrl: song.coverUrl || "/placeholder.svg?height=60&width=60",
+      coverUrl: song.coverUrl || "/images/spotify-logo.jpg",
+      audioUrl: song.audioUrl || "/audio/lovely.mp3",
     })
     setIsPlaying(true)
     setPlayingSongId(song.id)
@@ -68,6 +92,18 @@ export default function SearchPage() {
     setSearchResults([])
   }
 
+  const handleSongEnd = () => {
+    setIsPlaying(false)
+  }
+
+  const handleSearch = () => {
+    // Trigger search if there's a query
+    if (searchQuery.trim()) {
+      // Search is already handled by useEffect, but we could add analytics here
+      console.log("Search triggered for:", searchQuery)
+    }
+  }
+
   // Helper function to convert duration string (e.g., "3:45") to seconds
   const convertDurationToSeconds = (duration: string): number => {
     const [minutes, seconds] = duration.split(":").map(Number)
@@ -79,7 +115,11 @@ export default function SearchPage() {
       {/* Sidebar - hidden on mobile */}
       <div className="hidden md:flex w-64 flex-col border-r bg-card p-4">
         <div className="flex items-center gap-2 mb-6">
-          <Music className="h-6 w-6 text-green-600" />
+          <ImageWithFallback
+            src="/images/spotify-logo.jpg"
+            alt="Soptify"
+            className="h-6 w-6 rounded-full object-cover"
+          />
           <span className="font-bold text-xl">Soptify</span>
         </div>
 
@@ -102,25 +142,6 @@ export default function SearchPage() {
           </Button>
         </div>
 
-        <Separator className="my-4" />
-
-        <div className="mt-4 space-y-4">
-          {/* Upcoming Release */}
-          <div>
-            <h3 className="mb-2 text-sm font-medium">Upcoming Release</h3>
-            <UpcomingRelease />
-          </div>
-
-          {/* Premium Countdown */}
-          <div>
-            <h3 className="mb-2 text-sm font-medium">Your Premium Countdown</h3>
-            <div className="bg-green-100 p-3 rounded-md">
-              <p className="text-xs text-green-800 mb-1">Free trial ends in:</p>
-              <CountdownTimer />
-            </div>
-          </div>
-        </div>
-
         <div className="mt-auto">
           <Button variant="ghost" className="w-full justify-start" asChild>
             <Link href="/">
@@ -134,7 +155,11 @@ export default function SearchPage() {
       {/* Mobile header */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-10 bg-background border-b p-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Music className="h-5 w-5 text-green-600" />
+          <ImageWithFallback
+            src="/images/spotify-logo.jpg"
+            alt="Soptify"
+            className="h-5 w-5 rounded-full object-cover"
+          />
           <span className="font-bold text-lg">Soptify</span>
         </div>
         <Sheet>
@@ -147,7 +172,11 @@ export default function SearchPage() {
           <SheetContent side="left" className="w-64 p-0">
             <div className="flex flex-col h-full p-4">
               <div className="flex items-center gap-2 mb-6">
-                <Music className="h-6 w-6 text-green-600" />
+                <ImageWithFallback
+                  src="/images/spotify-logo.jpg"
+                  alt="Soptify"
+                  className="h-6 w-6 rounded-full object-cover"
+                />
                 <span className="font-bold text-xl">Soptify</span>
               </div>
 
@@ -170,25 +199,6 @@ export default function SearchPage() {
                 </Button>
               </div>
 
-              <Separator className="my-4" />
-
-              <div className="mt-4 space-y-4">
-                {/* Upcoming Release */}
-                <div>
-                  <h3 className="mb-2 text-sm font-medium">Upcoming Release</h3>
-                  <UpcomingRelease />
-                </div>
-
-                {/* Premium Countdown */}
-                <div>
-                  <h3 className="mb-2 text-sm font-medium">Your Premium Countdown</h3>
-                  <div className="bg-green-100 p-3 rounded-md">
-                    <p className="text-xs text-green-800 mb-1">Free trial ends in:</p>
-                    <CountdownTimer />
-                  </div>
-                </div>
-              </div>
-
               <div className="mt-auto">
                 <Button variant="ghost" className="w-full justify-start" asChild>
                   <Link href="/">
@@ -206,14 +216,57 @@ export default function SearchPage() {
       <div className="flex-1 overflow-auto pt-0 md:pt-0">
         {/* Add padding top on mobile for the fixed header */}
         <div className="p-6 pt-16 md:pt-6">
-          <h1 className="text-2xl md:text-3xl font-bold mb-6">Search</h1>
+          {/* Top Search Bar */}
+          <div className="flex items-center gap-4 mb-6">
+            <h1 className="text-2xl md:text-3xl font-bold">Search</h1>
+            <div className="flex-1 max-w-md">
+              <div className="relative">
+                <Input
+                  type="text"
+                  placeholder="What do you want to listen to?"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSearch()
+                    }
+                  }}
+                  className="pl-10 pr-20"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
+                  {searchQuery && (
+                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleClearSearch}>
+                      <X className="h-4 w-4" />
+                      <span className="sr-only">Clear search</span>
+                    </Button>
+                  )}
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="h-8 px-3 bg-green-500 hover:bg-green-600"
+                    onClick={handleSearch}
+                  >
+                    <Search className="h-3 w-3 mr-1" />
+                    Search
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
 
+          {/* Main Search Input (Original) */}
           <div className="relative mb-8">
             <Input
               type="text"
               placeholder="Search for songs, artists, or albums..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch()
+                }
+              }}
               className="pl-10 pr-10"
             />
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -233,7 +286,7 @@ export default function SearchPage() {
           {searchResults.length > 0 ? (
             <div>
               <h2 className="text-xl font-bold mb-4">Search Results</h2>
-              <ScrollArea className="h-[calc(100vh-250px)] pr-4">
+              <ScrollArea className="h-[calc(100vh-300px)] pr-4">
                 <div className="space-y-1">
                   {searchResults.map((song) => (
                     <div
@@ -244,10 +297,11 @@ export default function SearchPage() {
                       onClick={() => handlePlaySong(song)}
                     >
                       <div className="relative h-10 w-10 mr-3 flex-shrink-0">
-                        <img
-                          src={song.coverUrl || "/placeholder.svg?height=40&width=40"}
+                        <ImageWithFallback
+                          src={song.coverUrl || "/images/spotify-logo.jpg"}
                           alt={song.title}
                           className="h-full w-full object-cover rounded-md"
+                          fallbackSrc="/placeholder.svg?height=40&width=40"
                         />
                         {playingSongId === song.id && (
                           <div className="absolute inset-0 bg-black/40 rounded-md flex items-center justify-center">
@@ -269,7 +323,12 @@ export default function SearchPage() {
             </div>
           ) : searchQuery ? (
             <div className="text-center py-12">
-              <div className="text-6xl mb-4">🔍</div>
+              <ImageWithFallback
+                src="/images/spotify-logo.jpg"
+                alt="No results"
+                className="h-24 w-24 rounded-full mx-auto mb-4 opacity-50 object-cover"
+                fallbackSrc="/placeholder.svg?height=96&width=96"
+              />
               <h2 className="text-xl font-bold mb-2">No results found</h2>
               <p className="text-muted-foreground">
                 We couldn't find anything matching "{searchQuery}". Try something else?
@@ -309,7 +368,7 @@ export default function SearchPage() {
 
       {/* Music player - add padding bottom for mobile navigation */}
       <div className="fixed bottom-0 left-0 right-0 border-t bg-card p-2 pb-16 md:pb-2">
-        <MusicPlayer song={currentSong} isPlaying={isPlaying} onPlayPause={handlePlayPause} />
+        <AudioPlayer song={currentSong} isPlaying={isPlaying} onPlayPause={handlePlayPause} onSongEnd={handleSongEnd} />
       </div>
 
       {/* Mobile navigation bar */}
